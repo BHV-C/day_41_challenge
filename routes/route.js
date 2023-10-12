@@ -2,36 +2,40 @@ const express=require("express")
 const route= express.Router()
 const products= require("../model/products")
 const checkTimeMiddleware= require("../middleware/checkTime")
-const {run}=require('../db')
+// const {run}=require('../db')
+const {dbo}=require('../db')
 
 route.use(checkTimeMiddleware)
 
 route.get("/", async (req,res)=>{
-      const db= await run()
+      // const db= await run()
 
-      const phones = await db.collection("phones").find().toArray()
+
+      const phones = await dbo.collection("phones").find().toArray()
       console.log(phones);
       res.send(phones)
 })
 route.get("/one", async (req,res)=>{
-      const db= await run()
+      // const db= await run()
       const query = {model:{$regex :/iphone/i}}
-      const phones = await db.collection("phones").findOne(query)
+      const phones = await dbo.collection("phones").findOne(query)
       console.log(phones);
       res.send(phones)
 })
 route.get("/less", async (req,res)=>{
-      const db= await run()
+      // const db= await run()
       
-      const phones = await db.collection("phones").find({price: {$lte:5000, $gte:3000}}).project({model:1,price:1,_id:0}).toArray()
+      const phones = await dbo.collection("phones").find({price: {$lte:5000, $gte:3000}}).project({model:1,price:1,_id:0}).toArray()
       console.log(phones);
       res.send(phones)
 })
 
 
 route.post("/", async (req,res)=>{
-      const db = await run()
-      // const productsAdded = await db.collection("phones").insertMany(products) //all data 
+      // const {db, collection} = await run()
+      const productsAdded =  db.collection("phones");
+      // productsAdded.insertMany(products); //all data 
+      // collection.insertMany(products); //all data 
 
       const {model, price, quantity,properties, dateOfCreation} = req.body
 
@@ -42,9 +46,10 @@ route.post("/", async (req,res)=>{
             properties,
             dateOfCreation
       }
-      const productAdded = await db.collection("phones").insertOne(newProduct)
+      //  productAdded = await db.collection("phones").insertOne(newProduct)
+       productsAdded =  db.collection("phones").insertOne(newProduct)
       // console.log(newProduct);
-      res.send(productAdded)
+      res.send(db)
 
 
 

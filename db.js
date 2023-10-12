@@ -2,23 +2,44 @@ const { MongoClient } = require("mongodb");
 const products = require("./model/products")
 
 const uri = "mongodb://127.0.0.1:27017";
-const dbName = "products"
+const dbName = "productsDB"
 
-const client = new MongoClient(uri)
+const client = new MongoClient(uri, { useUnifiedTopology: true })
 // console.log(products)
-async function run(){
-  try{
-    await client.connect()
-    const db = client.db(dbName)
-      console.log("connected successfully")
+// async function run(){
+//   try{
+//     await client.connect()
+//     const db = client.db(dbName)
+//       console.log("connected successfully")
 
-    // console.log(phones)
-    return db;
-  }catch(err){
-    console.log(err.message)
+//     // console.log(phones)
+//     const collection = db.collection("products");
+//     collection.insertMany(products, (err, result) => {
+//       if (err) {
+//         console.error('Failed to insert document:', err);
+//         return;
+//       }
+//       console.log('Document inserted:', result.insertedId);
+//     });
+//     return {db,collection};
+//   }catch(err){
+//     console.log(err.message)
+//   }
+// }
+client.connect()
+const db = client.db(dbName)
+  console.log("connected successfully")
+
+// console.log(phones)
+const collection = db.collection("products");
+collection.insertMany(products, (err, result) => {
+  if (err) {
+    console.error('Failed to insert document:', err);
+    return;
   }
-}
-module.exports = {run}
+  console.log('Document inserted:', result.insertedId);
+});
+module.exports = {db}
 
 
 
